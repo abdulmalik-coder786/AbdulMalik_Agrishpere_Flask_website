@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Complete Your Profile</h4>
+                    <small>Finish setting up your account to access all features</small>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        {% if next %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                        {% endif %}
+                        
+                        <!-- Progress Indicator -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-success">Profile Completion</span>
+                                <span class="text-muted">Step 1 of 1</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Information Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Personal Information</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.phone.label(class="form-label") }}
+                                    {{ form.phone(class="form-control") }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger">{{ form.phone.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.location.label(class="form-label") }}
+                                    {{ form.location(class="form-control") }}
+                                    {% if form.location.errors %}
+                                        <div class="text-danger">{{ form.location.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    {{ form.date_of_birth.label(class="form-label") }}
+                                    {{ form.date_of_birth(class="form-control", type="date") }}
+                                    {% if form.date_of_birth.errors %}
+                                        <div class="text-danger">{{ form.date_of_birth.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.gender.label(class="form-label") }}
+                                    {{ form.gender(class="form-select") }}
+                                    {% if form.gender.errors %}
+                                        <div class="text-danger">{{ form.gender.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.address.label(class="form-label") }}
+                                    {{ form.address(class="form-control", rows="3") }}
+                                    {% if form.address.errors %}
+                                        <div class="text-danger">{{ form.address.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.bio.label(class="form-label") }}
+                                    {{ form.bio(class="form-control", rows="3") }}
+                                    {% if form.bio.errors %}
+                                        <div class="text-danger">{{ form.bio.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.profile_picture.label(class="form-label") }}
+                                    {{ form.profile_picture(class="form-control") }}
+                                    {% if form.profile_picture.errors %}
+                                        <div class="text-danger">{{ form.profile_picture.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role-specific sections -->
+                        {% if current_user.role == 'farmer' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Farm Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.farm_size.label(class="form-label") }}
+                                    {{ form.farm_size(class="form-select") }}
+                                    {% if form.farm_size.errors %}
+                                        <div class="text-danger">{{ form.farm_size.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.farming_method.label(class="form-label") }}
+                                    {{ form.farming_method(class="form-select") }}
+                                    {% if form.farming_method.errors %}
+                                        <div class="text-danger">{{ form.farming_method.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.crop_types.label(class="form-label") }}
+                                    {{ form.crop_types(class="form-control") }}
+                                    {% if form.crop_types.errors %}
+                                        <div class="text-danger">{{ form.crop_types.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role == 'vendor' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Business Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.business_name.label(class="form-label") }}
+                                    {{ form.business_name(class="form-control") }}
+                                    {% if form.business_name.errors %}
+                                        <div class="text-danger">{{ form.business_name.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.business_type.label(class="form-label") }}
+                                    {{ form.business_type(class="form-select") }}
+                                    {% if form.business_type.errors %}
+                                        <div class="text-danger">{{ form.business_type.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    {{ form.vendor_type.label(class="form-label") }}
+                                    {{ form.vendor_type(class="form-select") }}
+                                    {% if form.vendor_type.errors %}
+                                        <div class="text-danger">{{ form.vendor_type.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.product_categories.label(class="form-label") }}
+                                    {{ form.product_categories(class="form-control") }}
+                                    {% if form.product_categories.errors %}
+                                        <div class="text-danger">{{ form.product_categories.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.delivery_areas.label(class="form-label") }}
+                                    {{ form.delivery_areas(class="form-control", rows="3") }}
+                                    {% if form.delivery_areas.errors %}
+                                        <div class="text-danger">{{ form.delivery_areas.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role == 'consultant' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Professional Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.expertise.label(class="form-label") }}
+                                    {{ form.expertise(class="form-control") }}
+                                    {% if form.expertise.errors %}
+                                        <div class="text-danger">{{ form.expertise.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.experience_years.label(class="form-label") }}
+                                    {{ form.experience_years(class="form-control") }}
+                                    {% if form.experience_years.errors %}
+                                        <div class="text-danger">{{ form.experience_years.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    {{ form.consultation_fee.label(class="form-label") }}
+                                    {{ form.consultation_fee(class="form-control") }}
+                                    {% if form.consultation_fee.errors %}
+                                        <div class="text-danger">{{ form.consultation_fee.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.availability.label(class="form-label") }}
+                                    {{ form.availability(class="form-select") }}
+                                    {% if form.availability.errors %}
+                                        <div class="text-danger">{{ form.availability.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.qualifications.label(class="form-label") }}
+                                    {{ form.qualifications(class="form-control", rows="3") }}
+                                    {% if form.qualifications.errors %}
+                                        <div class="text-danger">{{ form.qualifications.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role == 'customer' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Preferences</h5>
+                            <div class="row">
+                                <div class="col-12">
+                                    {{ form.interests.label(class="form-label") }}
+                                    {{ form.interests(class="form-control") }}
+                                    {% if form.interests.errors %}
+                                        <div class="text-danger">{{ form.interests.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    {{ form.preferred_contact.label(class="form-label") }}
+                                    {{ form.preferred_contact(class="form-select") }}
+                                    {% if form.preferred_contact.errors %}
+                                        <div class="text-danger">{{ form.preferred_contact.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role in ['farmer', 'vendor', 'consultant'] %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Business Contact Information</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.business_phone.label(class="form-label") }}
+                                    {{ form.business_phone(class="form-control") }}
+                                    {% if form.business_phone.errors %}
+                                        <div class="text-danger">{{ form.business_phone.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.business_website.label(class="form-label") }}
+                                    {{ form.business_website(class="form-control") }}
+                                    {% if form.business_website.errors %}
+                                        <div class="text-danger">{{ form.business_website.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.business_description.label(class="form-label") }}
+                                    {{ form.business_description(class="form-control", rows="3") }}
+                                    {% if form.business_description.errors %}
+                                        <div class="text-danger">{{ form.business_description.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    {{ form.business_address.label(class="form-label") }}
+                                    {{ form.business_address(class="form-control", rows="3") }}
+                                    {% if form.business_address.errors %}
+                                        <div class="text-danger">{{ form.business_address.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Conditional Sections Based on Role -->
+                        {% if user.role in ['farmer', 'vendor'] %}
+                        <!-- Business Information Section -->
+                        {% endif %}
+
+                        {% if user.role == 'farmer' %}
+                        <!-- Farmer Specific Section -->
+                        {% endif %}
+
+                        {% if user.role == 'vendor' %}
+                        <!-- Vendor Specific Section -->
+                        {% endif %}
+
+                        {% if user.role == 'consultant' %}
+                        <!-- Consultant Specific Section -->
+                        {% endif %}
+
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-success btn-lg") }}
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between">
+                                {{ form.submit(class="btn btn-success") }}
+                                <button type="submit" name="skip" value="1" class="btn btn-outline-secondary">Skip for Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    // Enable date picker for date fields
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set max date to today for date of birth
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0');
+        var yyyy = today.getFullYear();
+        today = yyyy + '-' + mm + '-' + dd;
+        document.getElementById('date_of_birth').setAttribute('max', today);
+    });
+</script>
+{% endblock %}
+{% endblock %}

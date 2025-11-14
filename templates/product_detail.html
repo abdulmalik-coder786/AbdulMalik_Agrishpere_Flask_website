@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+                        <div class="card">
+                                {% if images and images|length > 1 %}
+                                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        {% for img in images %}
+                                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                                            <img src="data:image/jpeg;base64,{{ img }}" class="d-block w-100" alt="{{ product.name }}" style="height:400px; object-fit:contain;">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon"></span>
+                                    </button>
+                                </div>
+                                {% else %}
+                                <img src="{% if images %}data:image/jpeg;base64,{{ images[0] }}{% else %}https://via.placeholder.com/400x400?text=No+Image{% endif %}" class="card-img-top" alt="{{ product.name }}" style="height: 400px; object-fit: contain;">
+                                {% endif %}
+                        </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ product.name }}</h1>
+            
+            <div class="mb-3">
+                <span class="badge bg-primary">{{ product.category }}</span>
+                {% if product.sub_category %}
+                <span class="badge bg-secondary">{{ product.sub_category }}</span>
+                {% endif %}
+            </div>
+
+            <p class="lead mb-4">{{ product.description }}</p>
+
+            <div class="mb-4">
+                <h3 class="text-success">${{ "%.2f"|format(product.price) }}</h3>
+                <p class="mb-2">
+                    <span class="stock-badge {% if product.in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                        {{ 'In Stock' if product.in_stock else 'Out of Stock' }}
+                    </span>
+                    {% if product.in_stock %}
+                    <small class="text-muted">({{ product.quantity }} available)</small>
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if product.in_stock %}
+            <div class="mb-4">
+                <div class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <label for="quantity" class="form-label">Quantity:</label>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" class="form-control" id="quantity" value="1" min="1" max="{{ product.quantity }}">
+                    </div>
+                            <div class="col">
+                                {% if current_user.is_authenticated %}
+                                <button class="btn btn-success add-to-cart" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                                <button class="btn btn-primary buy-now ms-2" data-product-id="{{ product.id }}">
+                                    <i class="fas fa-credit-card"></i> Buy Now
+                                </button>
+                                {% else %}
+                                <a href="{{ url_for('auth.login', next=url_for('shop.view_product', product_id=product.id)) }}" class="btn btn-success">
+                                    <i class="fas fa-shopping-cart"></i> Login to Add
+                                </a>
+                                {% endif %}
+                            </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Vendor Info -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Sold by</h5>
+                    <p class="card-text">
+                        <i class="fas fa-store me-2"></i>
+                        {{ product.vendor.name }}
+                        {% if product.vendor.is_trusted_seller %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle"></i> Trusted Seller
+                        </span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Share Buttons -->
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary">
+                    <i class="fab fa-facebook-f"></i> Share
+                </button>
+                <button class="btn btn-outline-info">
+                    <i class="fab fa-twitter"></i> Tweet
+                </button>
+                <button class="btn btn-outline-success">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">Customer Reviews</h3>
+            
+            {% if product.reviews %}
+                {% for review in product.reviews %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0">{{ review.user.name }}</h6>
+                                <small class="text-muted">{{ review.created_at.strftime('%B %d, %Y') }}</small>
+                            </div>
+                            <div>
+                                {% for _ in range(review.rating) %}
+                                <i class="fas fa-star text-warning"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="mt-3 mb-0">{{ review.comment }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No reviews yet.</p>
+            {% endif %}
+
+            {% if current_user.is_authenticated %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Write a Review</h5>
+                        <form method="POST" action="{{ url_for('shop.add_review', product_id=product.id) }}">
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <div class="rating">
+                                    {% for i in range(5, 0, -1) %}
+                                    <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}">
+                                    <label for="star{{ i }}"><i class="far fa-star"></i></label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    Please <a href="{{ url_for('auth.login') }}">login</a> to write a review.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+    const checkoutUrl = "{{ url_for('shop.checkout') }}";
+
+    // Add to Cart
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!isAuthenticated) {
+                window.location.href = "{{ url_for('auth.login', next=url_for('shop.view_product', product_id=product.id)) }}";
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            const quantity = document.getElementById('quantity').value;
+
+            fetch('/shop/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product added to cart!');
+                } else {
+                    alert('Error: ' + (data.error || 'adding product to cart'));
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+    });
+
+    // Buy Now
+    document.querySelectorAll('.buy-now').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const quantity = document.getElementById('quantity').value;
+
+            fetch('/shop/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = checkoutUrl;
+                } else {
+                    alert('Error: ' + (data.error || 'adding product to cart'));
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

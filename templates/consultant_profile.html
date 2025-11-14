@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Consultant Profile Card -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <img src="{{ url_for('static', filename=consultant.img_url) if consultant.img_url else url_for('static', filename='images/default-consultant.jpg') }}"
+                     class="card-img-top" alt="{{ consultant.name }}"
+                     style="height: 300px; object-fit: cover;">
+                <div class="card-body">
+                    <h3 class="card-title">{{ consultant.name }}</h3>
+                    <p class="text-muted">
+                        <i class="fas fa-star text-warning"></i> 
+                        {{ "%.1f"|format(consultant.rating or 0) }} |
+                        {{ consultant.experience_years }}+ years experience
+                    </p>
+                    
+                    <hr>
+                    
+                    <!-- Contact Information -->
+                    <div class="mb-3">
+                        <h5 class="text-success">Contact Information</h5>
+                        <p><i class="fas fa-envelope me-2"></i> {{ consultant.email }}</p>
+                        {% if consultant.phone %}
+                        <p><i class="fas fa-phone me-2"></i> {{ consultant.phone }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Specializations -->
+                    <div class="mb-3">
+                        <h5 class="text-success">Specializations</h5>
+                        {% for specialization in consultant.specializations %}
+                        <span class="badge bg-success me-1 mb-1">{{ specialization.specialization }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Consultation Fee -->
+                    <div class="mb-3">
+                        <h5 class="text-success">Consultation Fee</h5>
+                        <p class="lead">${{ "%.2f"|format(consultant.consultation_fee) }}/hour</p>
+                    </div>
+                    
+                    <!-- Availability -->
+                    <div class="mb-3">
+                        <h5 class="text-success">Availability</h5>
+                        <p>{{ consultant.availability|title }}</p>
+                    </div>
+                    
+                    {% if current_user.is_authenticated %}
+                    <div class="d-grid">
+                        <a href="{{ url_for('consultant.book_consultation', consultant_id=consultant.id) }}" 
+                           class="btn btn-success btn-lg">Book Consultation</a>
+                    </div>
+                    {% else %}
+                    <div class="d-grid">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-success btn-lg">Login to Book</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Consultant Details -->
+        <div class="col-md-8">
+            <!-- About Section -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h4 class="card-title text-success">About</h4>
+                    <p class="card-text">{{ consultant.bio }}</p>
+                </div>
+            </div>
+            
+            <!-- Qualifications -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h4 class="card-title text-success">Qualifications</h4>
+                    <div class="card-text">
+                        {{ consultant.qualifications|safe }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Areas of Expertise -->
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    <h4 class="card-title text-success">Areas of Expertise</h4>
+                    <p class="card-text">{{ consultant.expertise }}</p>
+                </div>
+            </div>
+            
+            <!-- Reviews Section -->
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="card-title text-success">Client Reviews</h4>
+                    {% if consultant.consultations %}
+                        {% for consultation in consultant.consultations %}
+                            {% if consultation.client_rating %}
+                            <div class="review-card mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>{{ consultation.client.name }}</h6>
+                                        <p class="text-muted small">
+                                            {{ consultation.created_at.strftime('%B %d, %Y') }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        {% for _ in range(consultation.client_rating) %}
+                                        <i class="fas fa-star text-warning"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% if consultation.client_feedback %}
+                                <p class="mb-0">{{ consultation.client_feedback }}</p>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No reviews yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Marketplace Header -->
+    <div class="row">
+        <div class="col-12">
+            <div class="marketplace-header">
+                <h1>Agrisphere Marketplace</h1>
+                <p>Discover fresh flowers, plants, and gardening supplies</p>
+                {% if current_user.is_authenticated and (current_user.is_admin or current_user.role in ['vendor', 'farmer']) %}
+                <div class="mt-3">
+                    <a href="{{ url_for('shop.add_product') }}" class="btn btn-primary">Add Product</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters & Search Section -->
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Sidebar Filters -->
+            <div class="filters-card">
+                <h5>Filters</h5>
+                
+                <!-- Category Filter -->
+                <div class="filter-section">
+                    <h6>Categories</h6>
+                    <!-- Category checkboxes/select -->
+                </div>
+                
+                <!-- Price Range -->
+                <div class="filter-section">
+                    <h6>Price Range</h6>
+                    <!-- Min/Max price inputs -->
+                </div>
+                
+                <!-- Seller Type -->
+                <div class="filter-section">
+                    <h6>Seller Type</h6>
+                    <!-- Farmer/Vendor/Trusted filters -->
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <!-- Search Bar & Sort Options -->
+            <div class="search-sort-bar mb-3">
+                <form class="row g-2" method="get">
+                    <div class="col-md-6">
+                        <input type="text" name="q" class="form-control" placeholder="Search products..." value="{{ q or '' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <select name="category" class="form-select">
+                            <option value="">All categories</option>
+                            {% for c in categories %}
+                            <option value="{{ c }}" {% if category==c %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="sort" class="form-select">
+                            <option value="date" {% if sort=='date' %}selected{% endif %}>Newest</option>
+                            <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="popularity" {% if sort=='popularity' %}selected{% endif %}>Popularity</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <!-- Product Cards Loop -->
+                {% for product in products %}
+                <div class="product-card">
+                    <!-- Product Image -->
+                    <div class="product-image">
+                        <img src="{{ product.img_url }}" alt="{{ product.name }}">
+                    </div>
+                    
+                    <!-- Product Info -->
+                    <div class="product-info">
+                        <h5>{{ product.name }}</h5>
+                        <p class="product-category">{{ product.category }}</p>
+                        <p class="product-description">{{ (product.description or '')[:100] }}...</p>
+                        
+                        <!-- Price & Stock -->
+                        <div class="product-meta">
+                            <span class="price">${{ product.price }}</span>
+                            <span class="stock-badge {% if product.in_stock %}in-stock{% else %}out-of-stock{% endif %}">
+                                {{ 'In Stock' if product.in_stock else 'Out of Stock' }}
+                            </span>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="product-actions">
+                            <a href="{{ url_for('shop.view_product', product_id=product.id) }}" class="btn btn-outline-primary">View Details</a>
+                            {% if product.in_stock %}
+                            <button class="btn btn-success add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <!-- Previous/Next page links -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            const pid = this.dataset.productId;
+            if (!isAuthenticated) {
+                window.location.href = "{{ url_for('auth.login') }}?next=/shop/product/" + pid;
+                return;
+            }
+            // If authenticated, add to cart
+            fetch('/shop/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: parseInt(pid),
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product added to cart!');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error adding to cart');
+            });
+        });
+    });
+</script>
+{% endblock %}

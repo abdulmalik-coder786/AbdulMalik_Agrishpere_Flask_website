@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 text-success">Our Agricultural Consultants</h1>
+        <p class="lead text-muted">Get expert advice from our verified agricultural consultants</p>
+    </div>
+
+    <!-- Consultants Grid -->
+    <div class="row">
+        {% for user in consultants %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <!-- Consultant Image -->
+                <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='images/default-consultant.jpg') }}"
+                     class="card-img-top" alt="{{ user.name }}"
+                     style="height: 200px; object-fit: cover;">
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ user.name }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="fas fa-star text-warning"></i> 
+                        {{ "%.1f"|format(user.rating or 0) }} | 
+                        <i class="fas fa-briefcase"></i> 
+                        {{ user.experience_years or 0 }}+ years
+                    </p>
+                    
+                    <p class="card-text">
+                        <strong>Expertise:</strong> {{ user.expertise }}</p>
+                    
+                    <p class="card-text">{{ user.bio[:150] }}...</p>
+                    
+                    <!-- Specializations (from Consultant record if exists) -->
+                    <div class="mb-3">
+                        {% if user.consultant and user.consultant.specializations %}
+                            {% for specialization in user.consultant.specializations %}
+                            <span class="badge bg-success me-1">{{ specialization.specialization }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Consultation Fee -->
+                    <p class="card-text">
+                        <strong>Consultation Fee:</strong> 
+                        ${{ "%.2f"|format(user.consultation_fee or (user.consultant.consultation_fee if user.consultant else 0)) }}/hour
+                    </p>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('consultant.view_profile', consultant_id=user.id) }}" 
+                           class="btn btn-outline-success">View Profile</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('consultant.book_consultation', consultant_id=user.id) }}" 
+                           class="btn btn-success">Book Consultation</a>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-success">Login to Book</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if user.is_verified %}
+                <div class="card-footer text-center bg-light">
+                    <i class="fas fa-check-circle text-success"></i> Verified Expert
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- No Consultants Message -->
+    {% if not consultants %}
+    <div class="text-center my-5">
+        <p class="text-muted">No consultants available at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

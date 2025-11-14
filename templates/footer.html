@@ -1,0 +1,86 @@
+<!-- Footer -->
+<footer class="footer-bg text-light py-5 mt-5">
+    <div class="footer-content">
+    <div class="container">
+        <div class="row">
+            <!-- Company Info -->
+            <div class="col-lg-4 mb-4">
+                <h5 class="text-success mb-3">AgriSphere</h5>
+                <p class="text-muted">Empowering farmers with modern technology and sustainable agricultural solutions. Join our community of innovative agriculturists.</p>
+                <div class="social-links mt-3">
+                    <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-light me-3"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6 mb-4">
+                <h6 class="text-success mb-3">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="{{ url_for('home') }}" class="text-muted text-decoration-none">Home</a></li>
+                    <li class="mb-2"><a href="{{ url_for('blog.index') }}" class="text-muted text-decoration-none">Blog</a></li>
+                    <li class="mb-2"><a href="{{ url_for('forum.index') }}" class="text-muted text-decoration-none">Forum</a></li>
+                    <li class="mb-2"><a href="{{ url_for('shop.index') }}" class="text-muted text-decoration-none">Marketplace</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div class="col-lg-3 col-md-6 mb-4">
+                <h6 class="text-success mb-3">Resources</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none">Farming Guides</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none">Weather Updates</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none">Market Prices</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted text-decoration-none">Research Papers</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-3 mb-4">
+                <h6 class="text-success mb-3">Contact Us</h6>
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Mehran chowck,Badin,Sindh,Pakistan</li>
+                    <li class="mb-2"><i class="fas fa-phone me-2"></i> (123) 456-7890</li>
+                    <li class="mb-2"><i class="fas fa-envelope me-2"></i> contact@agrisphere.com</li>
+                </ul>
+                <div class="mt-3">
+                    <a href="#" class="btn btn-outline-success">Get Support</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Subscription -->
+        <div class="row mt-4">
+            <div class="col-lg-6 mx-auto">
+                <div class="text-center">
+                    <h6 class="text-success mb-3">Subscribe to Our Newsletter</h6>
+                    <div class="input-group newsletter-form">
+                        <input type="email" class="form-control" placeholder="Enter your email" aria-label="Enter your email">
+                        <button class="btn btn-success" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Footer -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <hr class="bg-secondary">
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <p class="text-muted mb-0">&copy; {{ now.year }} AgriSphere. All rights reserved.</p>
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Privacy Policy</a></li>
+                        <li class="list-inline-item"><span class="text-muted">•</span></li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Terms of Use</a></li>
+                        <li class="list-inline-item"><span class="text-muted">•</span></li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Font Awesome already included in base.html -->

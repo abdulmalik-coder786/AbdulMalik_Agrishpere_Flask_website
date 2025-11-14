@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-1"><i class="fas fa-user-edit me-2"></i>Edit Profile</h4>
+                    <small class="opacity-75">Update your profile information</small>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Profile Picture Section -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 text-center">
+                                <div class="profile-picture-section">
+                                    {% if current_user.profile_picture %}
+                                        <img src="{{ url_for('static', filename=current_user.profile_picture) }}" 
+                                             class="img-thumbnail rounded-circle mb-3" 
+                                             alt="Profile Picture"
+                                             style="width: 150px; height: 150px; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{{ url_for('static', filename='images/default-profile.png') }}" 
+                                             class="img-thumbnail rounded-circle mb-3" 
+                                             alt="Default Profile"
+                                             style="width: 150px; height: 150px; object-fit: cover;">
+                                    {% endif %}
+                                    <div class="mt-2">
+                                        {{ form.profile_picture(class="form-control form-control-sm") }}
+                                        <small class="form-text text-muted">Max 5MB - JPG, PNG, GIF</small>
+                                        {% if form.profile_picture.errors %}
+                                            <div class="text-danger small">{{ form.profile_picture.errors[0] }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-9">
+                                <!-- Basic Information -->
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" value="{{ current_user.name }}" disabled>
+                                        <small class="form-text text-muted">Contact admin to change name</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+                                        <small class="form-text text-muted">Contact admin to change email</small>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label class="form-label">Role</label>
+                                        <input type="text" class="form-control" value="{{ current_user.role|capitalize }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personal Information Section -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-4 text-primary">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.phone.label(class="form-label") }}
+                                    {{ form.phone(class="form-control", placeholder="+1 234 567 8900") }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger small">{{ form.phone.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.location.label(class="form-label") }}
+                                    {{ form.location(class="form-control", placeholder="City, State") }}
+                                    {% if form.location.errors %}
+                                        <div class="text-danger small">{{ form.location.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.address.label(class="form-label") }}
+                                    {{ form.address(class="form-control", rows="3", placeholder="Your complete address") }}
+                                    {% if form.address.errors %}
+                                        <div class="text-danger small">{{ form.address.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.date_of_birth.label(class="form-label") }}
+                                    {{ form.date_of_birth(class="form-control", type="date") }}
+                                    {% if form.date_of_birth.errors %}
+                                        <div class="text-danger small">{{ form.date_of_birth.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.gender.label(class="form-label") }}
+                                    {{ form.gender(class="form-select") }}
+                                    {% if form.gender.errors %}
+                                        <div class="text-danger small">{{ form.gender.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.bio.label(class="form-label") }}
+                                    {{ form.bio(class="form-control", rows="4", placeholder="Tell us about yourself...") }}
+                                    <div class="form-text">This will be visible on your public profile</div>
+                                    {% if form.bio.errors %}
+                                        <div class="text-danger small">{{ form.bio.errors[0] }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role-Specific Sections -->
+                        {% if current_user.role in ['farmer', 'vendor'] %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-4 text-primary">
+                                <i class="fas fa-building me-2"></i>Business Information
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.business_name.label(class="form-label") }}
+                                    {{ form.business_name(class="form-control", placeholder="Your business name") }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.business_type.label(class="form-label") }}
+                                    {{ form.business_type(class="form-select") }}
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.business_description.label(class="form-label") }}
+                                    {{ form.business_description(class="form-control", rows="3", placeholder="Describe your business") }}
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.business_address.label(class="form-label") }}
+                                    {{ form.business_address(class="form-control", rows="2", placeholder="Business address (if different)") }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.business_phone.label(class="form-label") }}
+                                    {{ form.business_phone(class="form-control", placeholder="Business phone") }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.business_website.label(class="form-label") }}
+                                    {{ form.business_website(class="form-control", placeholder="https://example.com") }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role == 'farmer' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-4 text-primary">
+                                <i class="fas fa-tractor me-2"></i>Farm Details
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.farm_size.label(class="form-label") }}
+                                    {{ form.farm_size(class="form-select") }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.farming_method.label(class="form-label") }}
+                                    {{ form.farming_method(class="form-select") }}
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.crop_types.label(class="form-label") }}
+                                    {{ form.crop_types(class="form-control", placeholder="roses, tulips, orchids, etc.") }}
+                                    <div class="form-text">Separate multiple crops with commas</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role == 'vendor' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-4 text-primary">
+                                <i class="fas fa-store me-2"></i>Vendor Details
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.vendor_type.label(class="form-label") }}
+                                    {{ form.vendor_type(class="form-select") }}
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.product_categories.label(class="form-label") }}
+                                    {{ form.product_categories(class="form-control", placeholder="cut flowers, plants, seeds, etc.") }}
+                                    <div class="form-text">Separate categories with commas</div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.delivery_areas.label(class="form-label") }}
+                                    {{ form.delivery_areas(class="form-control", rows="2", placeholder="Areas where you deliver products") }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if current_user.role == 'consultant' %}
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-4 text-primary">
+                                <i class="fas fa-graduation-cap me-2"></i>Consultant Details
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    {{ form.expertise.label(class="form-label") }}
+                                    {{ form.expertise(class="form-control", placeholder="rose cultivation, pest control, organic farming, etc.") }}
+                                    <div class="form-text">Separate areas of expertise with commas</div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.qualifications.label(class="form-label") }}
+                                    {{ form.qualifications(class="form-control", rows="3", placeholder="Degrees, certifications, training...") }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.experience_years.label(class="form-label") }}
+                                    {{ form.experience_years(class="form-control", type="number", min="0", max="50") }}
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    {{ form.consultation_fee.label(class="form-label") }}
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.consultation_fee(class="form-control", placeholder="0.00") }}
+                                        <span class="input-group-text">/hour</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    {{ form.availability.label(class="form-label") }}
+                                    {{ form.availability(class="form-select") }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ url_for('profile.view_profile') }}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            {{ form.submit(class="btn btn-primary px-5") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set max date for date of birth
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date_of_birth').setAttribute('max', today);
+        
+        // Image preview for profile picture
+        const profilePictureInput = document.querySelector('input[type="file"]');
+        const profileImage = document.querySelector('.profile-picture-section img');
+        
+        profilePictureInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImage.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>
+{% endblock %}

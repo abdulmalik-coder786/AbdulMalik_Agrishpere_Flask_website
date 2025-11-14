@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Forum | AgriSphere{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+  <div class="container">
+    <a class="navbar-brand" href="/">AgriSphere</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/forum">Forum</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="text-success mb-2">AgriSphere Forum</h1>
+      <p class="text-muted">Discuss agriculture tips, new farming technologies, and connect with other farmers.</p>
+    </div>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('forum.create_topic') }}" class="btn btn-success">
+      <i class="fas fa-plus"></i> Create New Topic
+    </a>
+    {% endif %}
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if topics %}
+  <div class="row">
+    {% for topic in topics %}
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">
+            <a href="{{ url_for('forum.discussion', slug=topic.slug) }}" class="text-decoration-none text-success">
+              {{ topic.title }}
+            </a>
+          </h5>
+          {% if topic.description %}
+          <p class="card-text text-muted">{{ topic.description }}</p>
+          {% endif %}
+          <div class="mt-auto">
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                Created {{ topic.created_at.strftime('%B %d, %Y') }}
+              </small>
+              <small class="text-muted">
+                {{ topic.message_count }} message{{ 's' if topic.message_count != 1 else '' }}
+              </small>
+            </div>
+            <a href="{{ url_for('forum.discussion', slug=topic.slug) }}" class="btn btn-success btn-sm mt-2">Join Discussion</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5">
+    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+    <h4 class="text-muted">No topics yet</h4>
+    <p class="text-muted">Be the first to start a discussion!</p>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('forum.create_topic') }}" class="btn btn-success">Create First Topic</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+
+{% block footer %}
+<footer class="bg-dark text-light py-4 mt-5">
+  <div class="container text-center">
+    <p>&copy; 2025 AgriSphere. All rights reserved.</p>
+  </div>
+</footer>
+{% endblock %}

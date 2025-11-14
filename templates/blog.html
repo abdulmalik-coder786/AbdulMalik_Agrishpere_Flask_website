@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">Blog Posts</h1>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('blog.create_post') }}" class="btn btn-primary">Create New Post</a>
+            {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Create Post</a>
+    
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        {% for post in posts.items %}
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                {% if post.image_url %}
+                <img src="{{ post.image_url }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title h4">{{ post.title }}</h2>
+                    {% if post.summary %}
+                        <p class="card-text">{{ post.summary }}</p>
+                    {% else %}
+                        <p class="card-text">{{ post.content[:200] }}...</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            By {{ post.author.name }} on {{ post.created_at.strftime('%B %d, %Y') }}
+                        </small>
+                        <a href="{{ url_for('blog.view_post', post_id=post.id) }}" class="btn btn-primary">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Blog navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if posts.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('blog.index', page=posts.prev_num) }}">Previous</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+            {% endif %}
+
+            {% for page_num in posts.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+            {% if page_num %}
+                {% if posts.page == page_num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('blog.index', page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if posts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('blog.index', page=posts.next_num) }}">Next</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

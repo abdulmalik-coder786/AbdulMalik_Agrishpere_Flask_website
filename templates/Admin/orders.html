@@ -1,0 +1,66 @@
+{% extends "Admin/base.html" %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Order Management</h1>
+</div>
+
+<div class="card shadow">
+  <div class="card-body">
+    <form method="get" class="row g-2 mb-3">
+      <div class="col-auto">
+        <input name="q" class="form-control" placeholder="Search by customer email" value="{{ q or '' }}">
+      </div>
+      <div class="col-auto">
+        <select name="status" class="form-select">
+          <option value="">All</option>
+          {% for s in ['pending','confirmed','shipped','delivered','cancelled'] %}
+          <option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary">Filter</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Placed</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+          <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.user.email if o.user else o.user_id }}</td>
+            <td>{{ o.total_amount }}</td>
+            <td>{{ o.status }}</td>
+            <td>{{ o.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+              <form method="post" action="{{ url_for('admin.update_order_status', order_id=o.id) }}" class="d-inline-block">
+                <select name="status" class="form-select form-select-sm d-inline-block" style="width:140px;">
+                  {% for s in ['pending','confirmed','shipped','delivered','cancelled'] %}
+                  <option value="{{ s }}" {% if o.status==s %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-sm btn-primary">Update</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted">No orders</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

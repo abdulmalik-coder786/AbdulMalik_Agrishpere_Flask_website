@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic }} | AgriSphere{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+  <div class="container">
+    <a class="navbar-brand" href="/">AgriSphere</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="text-success mb-2">{{ topic.title }}</h1>
+      {% if topic.description %}
+      <p class="text-muted">{{ topic.description }}</p>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('forum.index') }}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Forum
+    </a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Messages -->
+  {% if messages %}
+  <div class="card mb-4">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Discussion ({{ messages|length }} message{{ 's' if messages|length != 1 else '' }})</h5>
+    </div>
+    <div class="card-body p-0">
+      {% for message in messages %}
+      <div class="border-bottom p-3 {% if loop.first %}bg-light{% endif %}">
+        <div class="d-flex">
+          <div class="flex-shrink-0 me-3">
+            {% if message_authors[message.id].profile_picture %}
+            <img src="{{ url_for('static', filename='uploads/profiles/' + message_authors[message.id].profile_picture) }}"
+                 class="rounded-circle" width="40" height="40" alt="Profile">
+            {% else %}
+            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <span class="text-white fw-bold">{{ message_authors[message.id].name[0].upper() }}</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <strong>{{ message_authors[message.id].name }}</strong>
+                <small class="text-muted ms-2">{{ message.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+              </div>
+            </div>
+            <div class="mt-2">
+              {{ message.content | replace('\n', '<br>') | safe }}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="card mb-4">
+    <div class="card-body text-center py-5">
+      <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No messages yet</h5>
+      <p class="text-muted">Be the first to share your thoughts!</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Post new message -->
+  {% if current_user.is_authenticated %}
+  <div class="card">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Post a Message</h5>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('forum.post_message', slug=topic.slug) }}">
+        <div class="mb-3">
+          <label for="content" class="form-label">Your Message</label>
+          <textarea class="form-control" id="content" name="content" rows="4" required
+                    placeholder="Share your thoughts, ask questions, or contribute to the discussion..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Post Message</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="card-body text-center">
+      <p class="mb-0">Please <a href="{{ url_for('auth.login') }}">log in</a> to participate in this discussion.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+
+{% block footer %}
+<footer class="bg-dark text-light py-4 mt-5">
+  <div class="container text-center">
+    <p>&copy; 2025 AgriSphere. All rights reserved.</p>
+  </div>
+</footer>
+{% endblock %}

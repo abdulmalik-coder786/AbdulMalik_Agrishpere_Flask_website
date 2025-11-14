@@ -1,0 +1,96 @@
+{% extends "Admin/base.html" %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Edit Product</h1>
+</div>
+
+<div class="card shadow">
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input name="name" class="form-control" value="{{ product.name }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control">{{ product.description }}</textarea>
+      </div>
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Price</label>
+          <input name="price" class="form-control" value="{{ product.price }}">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Quantity</label>
+          <input name="quantity" class="form-control" value="{{ product.quantity }}">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">Min quantity</label>
+          <input name="min_quantity" class="form-control" value="{{ product.min_quantity }}">
+        </div>
+        <div class="col-md-3 mb-3">
+          <label class="form-label">In stock</label>
+          <select name="in_stock" class="form-select">
+            <option value="1" {% if product.in_stock %}selected{% endif %}>Yes</option>
+            <option value="0" {% if not product.in_stock %}selected{% endif %}>No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select name="category" class="form-select">
+          <option value="">-- none --</option>
+          {% for c in categories %}
+          <option value="{{ c }}" {% if product.category==c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Images (upload new images to replace existing ones)</label>
+        <input type="file" name="images" class="form-control" accept="image/*" multiple onchange="previewImages()">
+        <small class="text-muted">Leave empty to keep existing images. If uploading new images, at least 2 are required. Hold Ctrl (Cmd on Mac) to select multiple files.</small>
+        <div id="imagePreview" class="mt-2"></div>
+      </div>
+
+      <button class="btn btn-primary">Save</button>
+      <a class="btn btn-secondary" href="{{ url_for('admin.manage_products') }}">Cancel</a>
+    </form>
+  </div>
+</div>
+
+<script>
+function previewImages() {
+  const imageInput = document.querySelector('input[name="images"]');
+  const preview = document.getElementById('imagePreview');
+  const files = imageInput.files;
+
+  preview.innerHTML = '';
+
+  if (files.length > 0) {
+      const fileList = document.createElement('div');
+      fileList.className = 'selected-files mt-2';
+
+      for (let i = 0; i < files.length; i++) {
+          const fileItem = document.createElement('div');
+          fileItem.className = 'file-item d-inline-block me-2 mb-2 p-2 border rounded';
+          fileItem.innerHTML = `
+              <small class="text-muted">
+                  <i class="fas fa-image me-1"></i>${files[i].name}
+              </small>
+          `;
+          fileList.appendChild(fileItem);
+      }
+
+      const countBadge = document.createElement('div');
+      countBadge.className = 'badge bg-primary mt-2';
+      countBadge.textContent = `${files.length} file(s) selected`;
+      fileList.appendChild(countBadge);
+
+      preview.appendChild(fileList);
+  }
+}
+</script>
+{% endblock %}

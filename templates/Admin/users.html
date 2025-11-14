@@ -1,0 +1,77 @@
+{% extends "Admin/base.html" %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">User Management</h1>
+</div>
+
+<div class="card shadow">
+  <div class="card-body">
+    <form class="row g-2 mb-3" method="get">
+      <div class="col-auto">
+        <input type="text" name="q" class="form-control" placeholder="Search by email or name">
+      </div>
+      <div class="col-auto">
+        <button class="btn btn-primary">Search</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Verified</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <select class="form-select form-select-sm role-select" data-user-id="{{ u.id }}">
+                {% for r in ['customer','farmer','vendor','consultant','admin'] %}
+                <option value="{{ r }}" {% if u.role==r %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+              </select>
+            </td>
+            <td>
+              <span class="badge bg-{{ 'success' if u.is_verified else 'secondary' }}">{{ 'Yes' if u.is_verified else 'No' }}</span>
+            </td>
+            <td>
+              <span class="badge bg-{{ 'success' if u.is_active else 'danger' }}">{{ 'Active' if u.is_active else 'Disabled' }}</span>
+            </td>
+            <td>
+              <a href="{{ url_for('admin.verify_user', user_id=u.id) }}" class="btn btn-sm btn-outline-secondary">Toggle Verify</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.role-select').forEach(sel=>{
+  sel.addEventListener('change', ()=>{
+    const userId = sel.dataset.userId;
+    const role = sel.value;
+    fetch("{{ url_for('admin.update_user_role', user_id=0) }}".replace('/0', '/' + userId), {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({role})
+    }).then(r=>r.json()).then(resp=>{
+      if(!resp.success) alert('Failed: '+(resp.error||'unknown'));
+    }).catch(e=>alert('Error'))
+  })
+})
+</script>
+{% endblock %}

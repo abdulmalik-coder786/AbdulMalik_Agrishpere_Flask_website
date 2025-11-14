@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}About Us - AgriSphere{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+  <div class="row align-items-center">
+    <div class="col-md-6">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" class="img-fluid rounded shadow" alt="AgriSphere Logo">
+    </div>
+    <div class="col-md-6">
+      <h2 class="fw-bold text-success mb-3">About AgriSphere</h2>
+      <p class="text-secondary" style="font-size:1.1rem;">
+        <strong>AgriSphere</strong> is an innovative platform designed to empower farmers, agribusinesses, and consultants through smart agricultural technology and knowledge sharing.
+      </p>
+      <p class="text-secondary" style="font-size:1.1rem;">
+        Our mission is to connect people, products, and data across the agricultural ecosystem — from soil analysis to market insights — helping everyone make better, data-driven decisions.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="bg-light py-5">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h3 class="fw-bold text-success">Our Vision & Mission</h3>
+    </div>
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">🌾 Sustainability</h5>
+            <p class="card-text text-secondary">
+              Promoting eco-friendly and sustainable farming practices for a greener planet.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">🤝 Collaboration</h5>
+            <p class="card-text text-secondary">
+              Building a bridge between farmers, consultants, and suppliers for shared growth.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title fw-bold">📊 Innovation</h5>
+            <p class="card-text text-secondary">
+              Empowering agriculture with modern tools, IoT, and AI-driven analytics.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Contact Us Section -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h3 class="fw-bold text-success">📩 Contact Us</h3>
+      <p class="text-secondary">We’d love to hear from you! Reach out with any questions, feedback, or partnership opportunities.</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form>
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold">Full Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter your name">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold">Email Address</label>
+            <input type="email" class="form-control" id="email" placeholder="name@example.com">
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label fw-semibold">Message</label>
+            <textarea class="form-control" id="message" rows="4" placeholder="Type your message..."></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success px-4">Send Message</button>
+          </div>
+        </form>
+ <div class="text-center mt-5">
+      <p class="text-secondary mb-1">📧 Email: <a href="mailto:info@agrisphere.com" class="text-success text-decoration-none">info@agrisphere.com</a></p>
+      <p class="text-secondary mb-0">📍 Location: Badin, Sindh, Pakistan</p>
+    </div>
+  </div>
+  </section>
+{% endblock %}

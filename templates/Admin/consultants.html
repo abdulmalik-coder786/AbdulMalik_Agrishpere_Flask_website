@@ -1,0 +1,150 @@
+{% extends "admin/base.html" %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Manage Consultants</h1>
+</div>
+
+<!-- Consultants Table -->
+<div class="card shadow">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0">All Consultants</h5>
+    </div>
+    <div class="card-body">
+        {% if consultants %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Expertise</th>
+                        <th>Experience</th>
+                        <th>Status</th>
+                        <th>Verified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consultant in consultants %}
+                    <tr>
+                        <td>
+                            <strong>{{ consultant.name }}</strong>
+                            {% if consultant.user_id %}
+                            <br><small class="text-muted">Linked to User</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ consultant.email }}</td>
+                        <td>
+                            <span class="badge bg-info">{{ consultant.expertise }}</span>
+                        </td>
+                        <td>{{ consultant.experience_years }} years</td>
+                        <td>
+                            <span class="badge bg-{% if consultant.is_active %}success{% else %}danger{% endif %}">
+                                {{ 'Active' if consultant.is_active else 'Suspended' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if consultant.is_verified %}success{% else %}warning{% endif %}">
+                                {{ 'Verified' if consultant.is_verified else 'Pending' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if not consultant.is_verified %}
+                                <a href="{{ url_for('admin.toggle_consultant_verify', consultant_id=consultant.id) }}"
+                                   class="btn btn-success btn-sm"
+                                   title="Verify Consultant">
+                                    <i class="fas fa-check"></i>
+                                </a>
+                                {% endif %}
+                                
+                                <a href="{{ url_for('admin.toggle_consultant_active', consultant_id=consultant.id) }}"
+                                   class="btn btn-{% if consultant.is_active %}warning{% else %}success{% endif %} btn-sm"
+                                   title="{% if consultant.is_active %}Suspend{% else %}Activate{% endif %}">
+                                    <i class="fas fa-{% if consultant.is_active %}pause{% else %}play{% endif %}"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No Consultants Found</h5>
+            <p class="text-muted">No consultants have registered yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4>{{ consultants|length }}</h4>
+                        <p class="mb-0">Total Consultants</p>
+                    </div>
+                    <div class="ms-auto">
+                        <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4>{{ consultants|selectattr('is_verified')|list|length }}</h4>
+                        <p class="mb-0">Verified</p>
+                    </div>
+                    <div class="ms-auto">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4>{{ consultants|rejectattr('is_verified')|list|length }}</h4>
+                        <p class="mb-0">Pending</p>
+                    </div>
+                    <div class="ms-auto">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <div class="d-flex">
+                    <div>
+                        <h4>{{ consultants|rejectattr('is_active')|list|length }}</h4>
+                        <p class="mb-0">Suspended</p>
+                    </div>
+                    <div class="ms-auto">
+                        <i class="fas fa-pause-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

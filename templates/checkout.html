@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Checkout</h1>
+  <div class="row">
+    <div class="col-md-8">
+      <form method="post">
+        <div class="mb-3">
+          <label class="form-label">Shipping Address</label>
+          <textarea name="address" class="form-control" rows="3">{{ current_user.address or '' }}</textarea>
+        </div>
+        <button class="btn btn-primary">Place Order</button>
+      </form>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Order Summary</h5>
+          <p>Items: {{ cart_items|length }}</p>
+          <p>Subtotal: <strong>${{ '%.2f'|format(subtotal) }}</strong></p>
+          <p>Shipping: Free</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
